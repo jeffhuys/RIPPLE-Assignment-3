@@ -2,10 +2,22 @@ package strategy;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Scanner;
 import strategy.matchers.*;
 
 public class StrategyOpgave
 {
+
+        private static String inGet(Scanner in, String prompt) {
+            System.out.print(prompt);
+            return in.nextLine();
+        }
+        private static String inGet(String prompt) {
+            Scanner in = new Scanner(System.in);
+            System.out.print(prompt);
+            return in.nextLine();
+        }
+        
 	enum Method {Blind, City, Age, Selection};
 	
 	public static void main(String[] args)
@@ -13,8 +25,8 @@ public class StrategyOpgave
 		ArrayList<Single> allTheSingleLadies = new ArrayList<Single>();
 		ArrayList<Single> allTheSingleGentlemen = new ArrayList<Single>();
 
-		generateContent(30, allTheSingleLadies, false);
-		generateContent(30, allTheSingleGentlemen, true);
+		generateContent(3000, allTheSingleLadies, false);
+		generateContent(3000, allTheSingleGentlemen, true);
 		
 		Single subject;
 		ArrayList<Single> eligibles;
@@ -27,6 +39,24 @@ public class StrategyOpgave
 			subject = allTheSingleLadies.get(r.nextInt(allTheSingleLadies.size()));
 			eligibles = allTheSingleGentlemen;
 		}
+                //eligibles = allTheSingleLadies;
+                
+
+                String name = inGet("Please enter your name: ");
+                String surName = inGet("Please enter your surname: ");
+                String city = inGet("Please enter your city: ");
+                int age = Integer.decode(inGet("Please enter your age: "));
+                double height = Double.parseDouble(inGet("Please enter your height in meters: "));
+                int weight = Integer.decode(inGet("Please enter your weight in kg: "));
+                boolean smoker = false;
+                if(inGet("Do you smoke? Yes/No: ").toLowerCase().equals("yes")) 
+                    smoker = true;
+                
+                boolean pets = false;
+                if(inGet("Do you have pets? Yes/No: ").toLowerCase().equals("yes"))
+                    pets = true;
+                
+                subject = new Single(name, surName, city, age, height, weight, smoker, pets);
 
 		System.out.println("We're going to find a match for:\n" + subject);
 		
@@ -36,10 +66,10 @@ public class StrategyOpgave
 		System.out.println("\nCity match:\n"  + anybody(match(subject, eligibles, Method.City, null)));
 		int[] minMaxAge = {2, 2};
 		System.out.println("\nAge match (within 2 years):\n" + anybody(match(subject, eligibles, Method.Age, minMaxAge)));
-		Criterion[] criteria = {new Criterion(Criterion.Type.Smokes, false),
+		Criterion[] criteria = {new Criterion(Criterion.Type.Smokes, true),
 		                        new Criterion(Criterion.Type.Age, subject.getAge()),
 		                        new Criterion(Criterion.Type.Weight, 0, subject.getWeight())};
-		System.out.println("\nSelection match (non smoker, same age, weights less):\n" + anybody(match(subject, eligibles, Method.Selection, criteria)));
+		System.out.println("\nSelection match (smoker, same age, weights less):\n" + anybody(match(subject, eligibles, Method.Selection, criteria)));
 	}
 	
 	private static String anybody(Single single)
@@ -69,7 +99,7 @@ public class StrategyOpgave
 		String[] cities = {"Ankara", "Moscow", "London", "Rome", "Berlin", "Madrid",
 			"Budapest", "Warsaw", "Vienna", "Oslo", "Reykjavik", "Amsterdam",
 			"Stockholm", "Helsinki", "Dublin", "Paris", "Copenhagen",
-			"Lisbon", "Berne", "Athens", "Brussels"};
+			"Lisbon", "Berne", "Athens", "Brussels", "Almere"};
 		Random r = new Random();
 		String[] names = isAGuy ? maleNames : femaleNames;
 		for (int i = 0; i < amount; i++)
@@ -85,8 +115,7 @@ public class StrategyOpgave
 		}
 	}
 	
-	public static Single match(Single subject, ArrayList<Single> database, Method method, Object argument)
-	{
+	public static Single match(Single subject, ArrayList<Single> database, Method method, Object argument)	{
 		Random r = new Random();
 		
 		switch(method) {
@@ -144,4 +173,5 @@ public class StrategyOpgave
 			return null;
 		}
 	}
+        
 }
