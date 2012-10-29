@@ -5,6 +5,15 @@ import java.util.Random;
 import java.util.Scanner;
 import strategy.matchers.*;
 
+/**
+ * LEES DIT
+ * Wat ik heb begrepen hieruit is dat de bedoeling is om elk algoritme te
+ * "encapsuleren" en verwisselbaar te maken.
+ * Zie: http://en.wikipedia.org/wiki/Strategy_pattern
+ * 
+ * @author Jeff
+ */
+
 public class StrategyOpgave
 {
 
@@ -41,7 +50,7 @@ public class StrategyOpgave
 		}
                 //eligibles = allTheSingleLadies;
                 
-
+                /*
                 String name = inGet("Please enter your name: ");
                 String surName = inGet("Please enter your surname: ");
                 String city = inGet("Please enter your city: ");
@@ -56,19 +65,31 @@ public class StrategyOpgave
                 if(inGet("Do you have pets? Yes/No: ").toLowerCase().equals("yes"))
                     pets = true;
                 
-                subject = new Single(name, surName, city, age, height, weight, smoker, pets);
+                */
+                subject = new Single("Jeff", "Huijsmans", "Almere", 19, 1.79, 68, true, true);
 
 		System.out.println("We're going to find a match for:\n" + subject);
 		
 		Single match;
-		System.out.println("\nBlind match:\n" + anybody(match(subject, eligibles, Method.Blind, null)));
-		
-		System.out.println("\nCity match:\n"  + anybody(match(subject, eligibles, Method.City, null)));
-		int[] minMaxAge = {2, 2};
-		System.out.println("\nAge match (within 2 years):\n" + anybody(match(subject, eligibles, Method.Age, minMaxAge)));
+		//System.out.println("\nBlind match:\n" + anybody(match(subject, eligibles, Method.Blind, null)));
+                
+                // DIT IS NU INTERCHANGEABLE
+                Context context;
+                context = new Context(new StrategyBlindMatch());
+                System.out.println("\nBlind match:\n" + anybody(context.executeStrategy(subject, eligibles, null)));
+                context = new Context(new StrategyCityMatch());
+                System.out.println("\nCity match:\n" + anybody(context.executeStrategy(subject, eligibles, null)));	
+                int[] minMaxAge = {2, 2};
+                context = new Context(new StrategyAgeMatch());
+                System.out.println("\nAge match:\n" + anybody(context.executeStrategy(subject, eligibles, minMaxAge)));
+                
 		Criterion[] criteria = {new Criterion(Criterion.Type.Smokes, true),
 		                        new Criterion(Criterion.Type.Age, subject.getAge()),
 		                        new Criterion(Criterion.Type.Weight, 0, subject.getWeight())};
+                context = new Context(new StrategySelectionMatch());
+                System.out.println("\nSelection match:\n" + anybody(context.executeStrategy(subject, eligibles, criteria)));
+                
+                
 		System.out.println("\nSelection match (smoker, same age, weights less):\n" + anybody(match(subject, eligibles, Method.Selection, criteria)));
 	}
 	
